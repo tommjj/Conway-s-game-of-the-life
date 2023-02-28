@@ -11,7 +11,7 @@ public class GameWindow {
     public GameWindow(GamePanel gamePanel) {
         jframe = new JFrame();
 
-        jframe.setTitle("Caro");
+        jframe.setTitle("The Game Of The Life");
         jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jframe.add(gamePanel);
 

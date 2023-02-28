@@ -26,7 +26,7 @@ public class MouseInputs implements MouseListener, MouseMotionListener, MouseWhe
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        
+        gamePanel.getGame().getPlaying().mouseClicked(e);
     }
 
     @Override
@@ -52,11 +52,7 @@ public class MouseInputs implements MouseListener, MouseMotionListener, MouseWhe
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if(e.isControlDown()) {
-            if(e.getWheelRotation() > 0) {
-                System.out.println("Up");
-            } else {
-                System.out.println("Donw");
-            }
+            gamePanel.getGame().getPlaying().mouseWheelMoved(e);
         } 
     } 
 }

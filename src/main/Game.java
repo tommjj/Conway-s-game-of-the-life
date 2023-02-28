@@ -1,5 +1,6 @@
 package main;
 
+import gameStates.Playing;
 import java.awt.Graphics;
 
 public class Game implements Runnable{
@@ -7,9 +8,12 @@ public class Game implements Runnable{
     private GameWindow gameWindow;
     
     private Thread gameThread;
-    private final int FPS_SET = 1, UPS_SET = 1;
+    private final int FPS_SET = 120, UPS_SET = 120;
+    
+    private Playing playing;
     
     public Game() {
+        initClasses();
         gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);
 
@@ -18,13 +22,21 @@ public class Game implements Runnable{
 
         startGameLoop();
     }
+
+    public Playing getPlaying() {
+        return playing;
+    } 
+    
+    private void initClasses() {
+        playing = new Playing(this);
+    }
     
     public void update() {
-        
+        playing.update();
     }
 
     public void rander(Graphics g) {
-
+        playing.draw(g);
     }
     
     private void startGameLoop() {
@@ -72,4 +84,6 @@ public class Game implements Runnable{
             }
         }
     }
+
+    
 }
