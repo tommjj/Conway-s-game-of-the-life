@@ -24,6 +24,17 @@ public class Playing extends State implements Statemethods {
     public Playing(Game game) {
         super(game);
         cellsManager = new CellsManager(1280 * 2, 768 * 2);
+        cellsManager.setRandom();
+    }
+
+    private void zoomIn() {
+        float value = scale > 1 ? scale / 10 : 0.1f;
+        changeScale(value);
+    }
+
+    private void zoomOut() {
+        float value = scale > 1 ? scale / 10 : 0.1f;
+        changeScale(-value);
     }
 
     @Override
@@ -38,7 +49,7 @@ public class Playing extends State implements Statemethods {
             changeOffsetY((int) (10));
         }
         if (up && !down) {
-            changeOffsetY((int) (-10 ));
+            changeOffsetY((int) (-10));
         }
         if (updateCheck) {
             cellsManager.update();
@@ -46,8 +57,8 @@ public class Playing extends State implements Statemethods {
     }
 
     public void changeScale(float value) {
-        if ((scale + value) <= 0.2f) {
-            scale = 0.2f;
+        if ((scale + value) <= 0.1f) {
+            scale = 0.1f;
             return;
         }
         if ((scale + value) > 16) {
@@ -88,17 +99,17 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void draw(Graphics g) {
-        cellsManager.draw(g, (int) offsetX, (int) offsetY,  scale);
+        cellsManager.draw(g, (int) offsetX, (int) offsetY, scale);
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         float x = e.getX() / (CellConstants.CELL_SIZE * scale) + offsetX / CellConstants.CELL_SIZE;
-        
-        float y = e.getY() / (CellConstants.CELL_SIZE * scale) + offsetY /CellConstants.CELL_SIZE;
+
+        float y = e.getY() / (CellConstants.CELL_SIZE * scale) + offsetY / CellConstants.CELL_SIZE;
         System.out.println(x + "  " + y);
-        
-        cellsManager.setCell((int)x,(int) y, cellsManager.isAlive((int)x , (int)y) != 1);
+
+        cellsManager.setCell((int) x, (int) y, cellsManager.isAlive((int) x, (int) y) != 1);
     }
 
     @Override
@@ -113,7 +124,7 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        
     }
 
     @Override
@@ -162,15 +173,23 @@ public class Playing extends State implements Statemethods {
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (e.getWheelRotation() > 0) {
+            float sx = (float) e.getX() / WindowConstants.WIDTH_SIZE;
+            float sy = (float) e.getY() / WindowConstants.HEIGHT_SIZE;
+
             float lastScale = scale;
-            changeScale(-0.1f);
-            changeOffsetX(((((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) / 2);
-            changeOffsetY(((((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) / 2);
+            zoomOut();
+
+            changeOffsetX(((((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) * sx);
+            changeOffsetY(((((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) * sy);
         } else {
+            float sx = (float) e.getX() / WindowConstants.WIDTH_SIZE;
+            float sy = (float) e.getY() / WindowConstants.HEIGHT_SIZE;
+
             float lastScale = scale;
-            changeScale(0.1f);
-            changeOffsetX(((((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) / 2);
-            changeOffsetY(((((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) / 2);
+            zoomIn();
+
+            changeOffsetX(((((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) * sx);
+            changeOffsetY(((((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) * sy);
         }
 
     }
@@ -183,4 +202,10 @@ public class Playing extends State implements Statemethods {
         this.updateCheck = updateCheck;
     }
 
+    public void resetBool() {
+        left = false;
+        right = false;
+        up = false;
+        down = false;
+    }
 }

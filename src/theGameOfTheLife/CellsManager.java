@@ -3,7 +3,6 @@ package theGameOfTheLife;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Random;
-import utiliz.Constants;
 import utiliz.Constants.CellConstants;
 import utiliz.Constants.WindowConstants;
 
@@ -11,7 +10,6 @@ public class CellsManager {
 
     private boolean cells[][];
     private int width, height;
-    private Random rand;
 
     private int tick = 0, speed = 15;
 
@@ -20,11 +18,37 @@ public class CellsManager {
         this.width = width;
         this.height = height;
 
-        rand = new Random();
-
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                cells[i][j] = false;//rand.nextBoolean();
+                cells[i][j] = false;
+            }
+        }
+    }
+    
+    public void create(int width, int hieght) {
+        this.width = width;
+        this.height = hieght;
+        
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                cells[i][j] = false;
+            }
+        }
+    }
+    
+    public void setRandom() {
+        Random rd = new Random();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                cells[i][j] = rd.nextBoolean();
+            }
+        }
+    }
+    
+    public void resetAll() {
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                cells[i][j] = false;
             }
         }
     }
