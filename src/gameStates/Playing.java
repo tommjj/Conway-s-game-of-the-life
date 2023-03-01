@@ -27,7 +27,7 @@ public class Playing extends State implements Statemethods {
     public Playing(Game game) {
         super(game);
         cellsManager = new CellsManager(1280 * 2, 768 * 2);
-        //cellsManager.setRandom();
+        cellsManager.setRandom();
     }
 
     private void zoomIn() {
@@ -83,8 +83,8 @@ public class Playing extends State implements Statemethods {
             offsetX = 0;
             return;
         }
-        if (offsetX + value > (cellsManager.getWidth() * CellConstants.CELL_SIZE) - ((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE)) {
-            offsetX = (int) ((cellsManager.getWidth() * CellConstants.CELL_SIZE) - ((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE));
+        if (offsetX + value > (cellsManager.getWidth() * CellConstants.CELL_SIZE) - (WindowConstants.WIDTH_SIZE / scale)) {
+            offsetX = (int) ((cellsManager.getWidth() * CellConstants.CELL_SIZE) - (WindowConstants.WIDTH_SIZE / scale));
             return;
         }
         offsetX += value;
@@ -95,8 +95,8 @@ public class Playing extends State implements Statemethods {
             offsetY = 0;
             return;
         }
-        if (offsetY + value > (cellsManager.getHeight() * CellConstants.CELL_SIZE) - ((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE)) {
-            offsetY = (int) ((cellsManager.getHeight() * CellConstants.CELL_SIZE) - ((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE));
+        if (offsetY + value > (cellsManager.getHeight() * CellConstants.CELL_SIZE) - (WindowConstants.HEIGHT_SIZE / scale)) {
+            offsetY = (int) ((cellsManager.getHeight() * CellConstants.CELL_SIZE) - (WindowConstants.HEIGHT_SIZE / scale));
             return;
         }
         offsetY += value;
@@ -184,9 +184,9 @@ public class Playing extends State implements Statemethods {
                 lastMouseY = e.getY();
                 checkFirst = false;
             } else {
-                float vx = (((float) lastMouseX - e.getX()) / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE;
+                float vx = (((float) lastMouseX - e.getX()) / scale);
 
-                float vy = (((float) lastMouseY - e.getY()) / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE;
+                float vy = (((float) lastMouseY - e.getY()) / scale);
 
                 changeOffsetX(vx);
                 changeOffsetY(vy);
@@ -211,8 +211,8 @@ public class Playing extends State implements Statemethods {
             float lastScale = scale;
             zoomOut();
 
-            changeOffsetX(((((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) * sx);
-            changeOffsetY(((((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) * sy);
+            changeOffsetX(((WindowConstants.WIDTH_SIZE / lastScale) - ((WindowConstants.WIDTH_SIZE / scale))) * sx);
+            changeOffsetY(((WindowConstants.HEIGHT_SIZE / lastScale) - ((WindowConstants.HEIGHT_SIZE / scale))) * sy);
         } else {
             float sx = (float) e.getX() / WindowConstants.WIDTH_SIZE;
             float sy = (float) e.getY() / WindowConstants.HEIGHT_SIZE;
@@ -220,8 +220,8 @@ public class Playing extends State implements Statemethods {
             float lastScale = scale;
             zoomIn();
 
-            changeOffsetX(((((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) * sx);
-            changeOffsetY(((((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * lastScale)) * CellConstants.CELL_SIZE)) - (((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE))) * sy);
+            changeOffsetX(((WindowConstants.WIDTH_SIZE / lastScale) - ((WindowConstants.WIDTH_SIZE / scale))) * sx);
+            changeOffsetY(((WindowConstants.HEIGHT_SIZE / lastScale) - ((WindowConstants.HEIGHT_SIZE / scale))) * sy);
         }
 
     }
