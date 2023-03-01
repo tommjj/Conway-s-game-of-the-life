@@ -24,18 +24,18 @@ public class CellsManager {
             }
         }
     }
-    
+
     public void create(int width, int hieght) {
         this.width = width;
         this.height = hieght;
-        
+
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 cells[i][j] = false;
             }
         }
     }
-    
+
     public void setRandom() {
         Random rd = new Random();
         for (int i = 0; i < width; i++) {
@@ -44,7 +44,7 @@ public class CellsManager {
             }
         }
     }
-    
+
     public void resetAll() {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -60,9 +60,7 @@ public class CellsManager {
     public int getHeight() {
         return height;
     }
-    
-    
-    
+
     public int isAlive(int x, int y) {
         if (x < 0 || x >= width) {
             return 0;
@@ -108,13 +106,13 @@ public class CellsManager {
 
     public void setCell(int x, int y, boolean alive) {
         if (x < 0 || x >= width) {
-            return ;
+            return;
         }
         if (y < 0 || y >= height) {
-            return ;
+            return;
         }
 
-       cells[x][y] = alive;
+        cells[x][y] = alive;
     }
 
     public void updateAllCells() {
@@ -137,18 +135,51 @@ public class CellsManager {
         }
     }
 
+    public void drawMap(Graphics g, int locationX, int locationY , int sizeX, int sizeY, int offSetX, int offSetY, float scale) {
+        g.setColor(Color.BLACK);
+        g.fillRect(locationX, locationY, sizeX, sizeY);
+        
+        int widthStart = (int) (offSetX / CellConstants.CELL_SIZE) - 2 > 0 ? (int) (offSetX / CellConstants.CELL_SIZE) - 2 : 0;
+        int heightStart = (int) (offSetY / CellConstants.CELL_SIZE) - 2 > 0 ? (int) (offSetY / CellConstants.CELL_SIZE) - 2 : 0;
+
+        int widthEnd = widthStart + (int) sizeX < width ? widthStart + (int) sizeX : width;
+        int heightEnd = heightStart + (int) sizeY < height ? heightStart + (int) sizeY: height;
+
+        for (int i = widthStart; i < widthEnd; i++) {
+            for (int j = heightStart; j < heightEnd; j++) {
+                if (cells[i][j]) {
+                    g.setColor(Color.WHITE);
+                    int x = locationX + (int) ((i * (scale * CellConstants.CELL_SIZE)) - (offSetX * scale));
+                    int y = locationY + (int) ((j * (scale * CellConstants.CELL_SIZE)) - (offSetY * scale));
+                    g.fillRect(x , y, (int) (scale * CellConstants.CELL_SIZE), (int) (scale * CellConstants.CELL_SIZE));
+                } else {
+
+                }
+            }
+        }
+        g.setColor(Color.WHITE);
+        g.drawRect(locationX, locationY, sizeX, sizeY);
+    }
+
     public void draw(Graphics g, int offSetX, int offSetY, float scale) {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, WindowConstants.WIDTH_SIZE, WindowConstants.HEIGHT_SIZE);
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+
+        int widthStart = (int) (offSetX / CellConstants.CELL_SIZE) - 2 > 0 ? (int) (offSetX / CellConstants.CELL_SIZE) - 2 : 0;
+        int heightStart = (int) (offSetY / CellConstants.CELL_SIZE) - 2 > 0 ? (int) (offSetY / CellConstants.CELL_SIZE) - 2 : 0;
+
+        int widthEnd = widthStart + (int) (WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) + 4 < width ? widthStart + (int) (WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) + 4 : width;
+        int heightEnd = heightStart + (int) (WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) + 4 < height ? heightStart + (int) (WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) + 4 : height;
+
+        for (int i = widthStart; i < widthEnd; i++) {
+            for (int j = heightStart; j < heightEnd; j++) {
                 if (cells[i][j]) {
                     g.setColor(Color.WHITE);
                     int x = (int) ((i * (scale * CellConstants.CELL_SIZE)) - (offSetX * scale));
                     int y = (int) ((j * (scale * CellConstants.CELL_SIZE)) - (offSetY * scale));
                     g.fillRect(x, y, (int) (scale * CellConstants.CELL_SIZE), (int) (scale * CellConstants.CELL_SIZE));
                 } else {
-                    
+
                 }
             }
         }

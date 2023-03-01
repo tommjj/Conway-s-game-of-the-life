@@ -24,6 +24,11 @@ public class Playing extends State implements Statemethods {
     private boolean checkFirst = true;
     private int lastMouseX, lastMouseY;
 
+    private int mouseButton;
+    private boolean checkMousePressed = false;
+    private boolean checkCtrlDown = false;
+    private int currentMouseX, currentMouseY;
+
     public Playing(Game game) {
         super(game);
         cellsManager = new CellsManager(1280 * 2, 768 * 2);
@@ -56,9 +61,44 @@ public class Playing extends State implements Statemethods {
         if (up && !down) {
             changeOffsetY((int) (-10));
         }
+
+        if (checkMousePressed) {
+            if (checkCtrlDown) { 
+                controlWindow();
+            } else {
+                addRemoveCell();
+            }         
+        }
+
         if (updateCheck) {
             cellsManager.update();
         }
+
+    }
+
+    public void controlWindow() {
+        if (checkFirst) {
+            lastMouseX = currentMouseX;
+            lastMouseY = currentMouseY;
+            checkFirst = false;
+        } else {
+            float vx = (((float) lastMouseX - currentMouseX) / scale);
+
+            float vy = (((float) lastMouseY - currentMouseY) / scale);
+
+            changeOffsetX(vx);
+            changeOffsetY(vy);
+
+            lastMouseX = currentMouseX;
+            lastMouseY = currentMouseY;
+        }
+    }
+
+    public void addRemoveCell() {
+        float x = currentMouseX / (CellConstants.CELL_SIZE * scale) + offsetX / CellConstants.CELL_SIZE;
+        float y = currentMouseY / (CellConstants.CELL_SIZE * scale) + offsetY / CellConstants.CELL_SIZE;
+
+        cellsManager.setCell((int) x, (int) y, mouseButton == MouseEvent.BUTTON1);
     }
 
     public void changeScale(float value) {
@@ -105,6 +145,8 @@ public class Playing extends State implements Statemethods {
     @Override
     public void draw(Graphics g) {
         cellsManager.draw(g, (int) offsetX, (int) offsetY, scale);
+
+        cellsManager.drawMap(g, 1000, 0, 280, 280, (int) offsetX, (int) offsetY, 0.1f);
     }
 
     @Override
@@ -114,6 +156,8 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        mouseButton = e.getButton();
+        checkMousePressed = true;
         if (e.isControlDown()) {
 
         } else {
@@ -127,11 +171,12 @@ public class Playing extends State implements Statemethods {
     @Override
     public void mouseReleased(MouseEvent e) {
         checkFirst = true;
+        checkMousePressed = false;
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        setCurrentMouse(e);
     }
 
     @Override
@@ -152,9 +197,18 @@ public class Playing extends State implements Statemethods {
             case KeyEvent.VK_SPACE:
                 updateCheck = !updateCheck;
                 break;
+            case KeyEvent.VK_X:
+                if (e.isControlDown()) {
+                    cellsManager.resetAll();
+                }
+                break;
+            case KeyEvent.VK_CONTROL:
+                checkCtrlDown = true;
+                break;
             default:
-
+                break;
         }
+
     }
 
     @Override
@@ -172,34 +226,22 @@ public class Playing extends State implements Statemethods {
             case KeyEvent.VK_S:
                 down = false;
                 break;
+            case KeyEvent.VK_CONTROL:
+                checkCtrlDown = false;
+                break;
             default:
 
         }
     }
 
+    private void setCurrentMouse(MouseEvent e) {
+        currentMouseX = e.getX();
+        currentMouseY = e.getY();
+    }
+
     public void mouseDragged(MouseEvent e) {
-        if (e.isControlDown()) {
-            if (checkFirst) {
-                lastMouseX = e.getX();
-                lastMouseY = e.getY();
-                checkFirst = false;
-            } else {
-                float vx = (((float) lastMouseX - e.getX()) / scale);
+        setCurrentMouse(e);
 
-                float vy = (((float) lastMouseY - e.getY()) / scale);
-
-                changeOffsetX(vx);
-                changeOffsetY(vy);
-
-                lastMouseX = e.getX();
-                lastMouseY = e.getY();
-            }
-        } else {
-            float x = e.getX() / (CellConstants.CELL_SIZE * scale) + offsetX / CellConstants.CELL_SIZE;
-            float y = e.getY() / (CellConstants.CELL_SIZE * scale) + offsetY / CellConstants.CELL_SIZE;
-
-            cellsManager.setCell((int) x, (int) y, e.getModifiersEx() == MouseEvent.BUTTON1_DOWN_MASK);
-        }
     }
 
     @Override
@@ -239,6 +281,8 @@ public class Playing extends State implements Statemethods {
         right = false;
         up = false;
         down = false;
-        checkFirst = false;
+        checkFirst = true;
+        checkMousePressed = false;
+        checkCtrlDown = false;
     }
 }

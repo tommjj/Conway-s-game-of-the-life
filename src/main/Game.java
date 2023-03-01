@@ -16,7 +16,7 @@ public class Game implements Runnable{
         initClasses();
         gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);
-
+        
         gamePanel.setFocusable(true);
         gamePanel.requestFocus();
 
@@ -85,5 +85,9 @@ public class Game implements Runnable{
         }
     }
 
+    public GamePanel getGamePanel() {
+        return gamePanel;
+    }
+    
     
 }
