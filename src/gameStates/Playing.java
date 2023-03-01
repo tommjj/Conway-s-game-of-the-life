@@ -13,28 +13,33 @@ public class Playing extends State implements Statemethods {
 
     private CellsManager cellsManager;
 
-    private float offsetX = 0;
-    private float offsetY = 0;
+    private float offsetX = 1280 * CellConstants.CELL_SIZE;
+    private float offsetY = 768 * CellConstants.CELL_SIZE;
     private float scale = 1.0f;
 
     private boolean left = false, right = false, up = false, down = false;
 
     private boolean updateCheck = true;
 
+    private boolean checkFirst = true;
+    private int lastMouseX, lastMouseY;
+
     public Playing(Game game) {
         super(game);
         cellsManager = new CellsManager(1280 * 2, 768 * 2);
-        cellsManager.setRandom();
+        //cellsManager.setRandom();
     }
 
     private void zoomIn() {
         float value = scale > 1 ? scale / 10 : 0.1f;
         changeScale(value);
+        updateOffset();
     }
 
     private void zoomOut() {
         float value = scale > 1 ? scale / 10 : 0.1f;
         changeScale(-value);
+        updateOffset();
     }
 
     @Override
@@ -78,7 +83,7 @@ public class Playing extends State implements Statemethods {
             offsetX = 0;
             return;
         }
-        if (offsetX + value >= (cellsManager.getWidth() * CellConstants.CELL_SIZE) - ((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE)) {
+        if (offsetX + value > (cellsManager.getWidth() * CellConstants.CELL_SIZE) - ((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE)) {
             offsetX = (int) ((cellsManager.getWidth() * CellConstants.CELL_SIZE) - ((WindowConstants.WIDTH_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE));
             return;
         }
@@ -90,7 +95,7 @@ public class Playing extends State implements Statemethods {
             offsetY = 0;
             return;
         }
-        if (offsetY + value >= (cellsManager.getHeight() * CellConstants.CELL_SIZE) - ((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE)) {
+        if (offsetY + value > (cellsManager.getHeight() * CellConstants.CELL_SIZE) - ((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE)) {
             offsetY = (int) ((cellsManager.getHeight() * CellConstants.CELL_SIZE) - ((WindowConstants.HEIGHT_SIZE / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE));
             return;
         }
@@ -104,27 +109,29 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        float x = e.getX() / (CellConstants.CELL_SIZE * scale) + offsetX / CellConstants.CELL_SIZE;
 
-        float y = e.getY() / (CellConstants.CELL_SIZE * scale) + offsetY / CellConstants.CELL_SIZE;
-        System.out.println(x + "  " + y);
-
-        cellsManager.setCell((int) x, (int) y, cellsManager.isAlive((int) x, (int) y) != 1);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if (e.isControlDown()) {
 
+        } else {
+            float x = e.getX() / (CellConstants.CELL_SIZE * scale) + offsetX / CellConstants.CELL_SIZE;
+            float y = e.getY() / (CellConstants.CELL_SIZE * scale) + offsetY / CellConstants.CELL_SIZE;
+
+            cellsManager.setCell((int) x, (int) y, e.getButton() == MouseEvent.BUTTON1);
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        checkFirst = true;
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        
+
     }
 
     @Override
@@ -170,6 +177,31 @@ public class Playing extends State implements Statemethods {
         }
     }
 
+    public void mouseDragged(MouseEvent e) {
+        if (e.isControlDown()) {
+            if (checkFirst) {
+                lastMouseX = e.getX();
+                lastMouseY = e.getY();
+                checkFirst = false;
+            } else {
+                float vx = (((float) lastMouseX - e.getX()) / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE;
+
+                float vy = (((float) lastMouseY - e.getY()) / (CellConstants.CELL_SIZE * scale)) * CellConstants.CELL_SIZE;
+
+                changeOffsetX(vx);
+                changeOffsetY(vy);
+
+                lastMouseX = e.getX();
+                lastMouseY = e.getY();
+            }
+        } else {
+            float x = e.getX() / (CellConstants.CELL_SIZE * scale) + offsetX / CellConstants.CELL_SIZE;
+            float y = e.getY() / (CellConstants.CELL_SIZE * scale) + offsetY / CellConstants.CELL_SIZE;
+
+            cellsManager.setCell((int) x, (int) y, e.getModifiersEx() == MouseEvent.BUTTON1_DOWN_MASK);
+        }
+    }
+
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (e.getWheelRotation() > 0) {
@@ -207,5 +239,6 @@ public class Playing extends State implements Statemethods {
         right = false;
         up = false;
         down = false;
+        checkFirst = false;
     }
 }
